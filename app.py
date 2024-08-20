@@ -37,7 +37,7 @@ menu_data = [
 st.text("")
 menu_id = hc.nav_bar(
     menu_definition=menu_data,
-    override_theme={"txc_inactive": "#FFFFFF"},
+    override_theme={"txc_inactive": "#FFFFFF", "menu_background": "blue"},
     home_name={"id": "home", "label": "Home", "icon": "fa fa-home"},
     login_name={
         "id": "account",
@@ -45,7 +45,7 @@ menu_id = hc.nav_bar(
         "icon": "fa fa-user-circle",
         "ttip": "Account settings",
     },
-    hide_streamlit_markers=True,
+    hide_streamlit_markers=False,
     sticky_nav=True,
     sticky_mode="pinned",
 )
