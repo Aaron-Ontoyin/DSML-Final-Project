@@ -45,7 +45,7 @@ menu_id = hc.nav_bar(
         "icon": "fa fa-user-circle",
         "ttip": "Account settings",
     },
-    hide_streamlit_markers=False,
+    hide_streamlit_markers=True,
     sticky_nav=True,
     sticky_mode="pinned",
 )

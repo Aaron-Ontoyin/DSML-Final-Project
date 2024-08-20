@@ -14,6 +14,7 @@ def account():
             .container {
                 max-width: 800px;
                 margin: auto;
+                margin-bottom: 50px;
                 padding: 20px;
                 background: rgba(255, 255, 255, 0.8);
                 border-radius: 10px;
@@ -21,7 +22,7 @@ def account():
             }
             .header {
                 text-align: center;
-                padding-bottom: 20px;
+                padding-bottom: 10px;
             }
             .header h1 {
                 color: #007BFF;
@@ -48,11 +49,15 @@ def account():
                 <h2>Future Plans</h2>
                 <p>Later, we'll give users the chance to use the most popular LLMs such as various ChatGPT flavors, Gemini flavors, etc. For now, we're only using Gemini 1.5 Flash.</p>
             </div>
-            <div class="section">
-                <h2>API Key Integration</h2>
-                <p>In the future, users will be able to use their own API keys to access these models for various tasks supported by this application.</p>
-            </div>
         </div>
         """,
         unsafe_allow_html=True,
     )
+
+    with st.columns(3)[1]:
+        api_key_form = st.form(key="api_key_form")
+        api_key = api_key_form.text_input("Gemini API Key")
+        api_key_form.form_submit_button("Save")
+        if api_key:
+            st.session_state["LLM_API_KEY"] = api_key
+            st.success("API key saved successfully.")

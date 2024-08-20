@@ -35,16 +35,22 @@ def content_summariser():
         )
 
     with upload_col:
-        content_form = st.form(key="content_form")
-        uploaded_file = youtube_url = website_url = None
-        if tool_option == "PDF---- Summarizer":
-            uploaded_file = content_form.file_uploader(
-                f"Upload a PDF file:", type=["pdf"]
+        if st.session_state.get("LLM_API_KEY"):
+            content_form = st.form(key="content_form")
+            uploaded_file = youtube_url = website_url = None
+            if tool_option == "PDF---- Summarizer":
+                uploaded_file = content_form.file_uploader(
+                    f"Upload a PDF file:", type=["pdf"]
+                )
+            elif tool_option == "Youtube Summarizer":
+                youtube_url = content_form.text_input(f"Enter a Youtube Video ID: ")
+            elif tool_option == "Website Summarizer":
+                website_url = content_form.text_input(f"Enter a Website URL: ")
+        else:
+            st.warning(
+                "Please provide your Gemini API key in the `aacounts` section to use this tool."
             )
-        elif tool_option == "Youtube Summarizer":
-            youtube_url = content_form.text_input(f"Enter a Youtube Video ID: ")
-        elif tool_option == "Website Summarizer":
-            website_url = content_form.text_input(f"Enter a Website URL: ")
+            return
 
     if content_form.form_submit_button("Load content"):
         if uploaded_file:
@@ -114,16 +120,26 @@ def content_summariser():
         st.session_state.messages.append({"role": "user", "content": prompt})
 
         with st.chat_message("assistant"):
-            responses = chat.send_message(
-                prompt,
-                safety_settings={
-                    HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                    HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                    HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                    HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
-                },
-                stream=True,
-            )
+            try:
+                responses = chat.send_message(
+                    prompt,
+                    safety_settings={
+                        HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                        HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+                    },
+                    stream=True,
+                )
+            except Exception as e:
+                if "API_KEY_INVALID" in str(e):
+                    st.error(
+                        "Your Gemini API key is invalid. Please provide a valid API key in the `accounts` section."
+                    )
+                    st.session_state.pop("chat", None)
+                    st.session_state.pop("LLM_API_KEY", None)
+                    return
+
             try:
                 full_response = st.write_stream(get_chat_stream(responses))
             except ValueError as e:

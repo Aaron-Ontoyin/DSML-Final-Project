@@ -4,12 +4,13 @@ from google.generativeai.types import HarmCategory
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-load_dotenv()
+from streamlit import session_state as ss
 
-genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
+load_dotenv()
 
 
 def get_chat(summary_text):
+    genai.configure(api_key=ss.get("LLM_API_KEY"))
 
     model = genai.GenerativeModel(
         model_name="gemini-1.5-flash-001",
