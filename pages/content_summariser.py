@@ -70,9 +70,12 @@ def content_summariser():
                 summary_text = (
                     f"This is the transcript of the Youtube video at {youtube_url}.\n\n"
                 )
-                transcript = get_transcript(youtube_url)
-                if not transcript:
-                    st.warning("This video does not have a transcript.")
+                try:
+                    transcript = get_transcript(youtube_url)
+                except ValueError as e:
+                    st.warning(
+                        "I'm sorry, I'm unable to watch this video. No transcript found."
+                    )
                     return
 
                 for line in transcript:
